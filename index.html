@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Картотека приюта</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#A24E36">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Картотека">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script>
+  window.__loadFails = [];
+  function __scriptFail(name) { window.__loadFails.push(name); }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" onerror="__scriptFail('react')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" onerror="__scriptFail('react-dom')"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js" onerror="__scriptFail('babel-standalone')"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js" onerror="__scriptFail('firebase-app-compat')"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js" onerror="__scriptFail('firebase-firestore-compat')"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-storage-compat.js" onerror="__scriptFail('firebase-storage-compat')"></script>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; }
+
+:root {
+  --bg: #FFFFFF;
+  --bg-soft: #F6F7F9;
+  --ink: #2B333B;
+  --ink-soft: #8A93A0;
+  --ink-faint: #C0C6CE;
+  --line: #E8EBEF;
+  --navy: #47586B;
+  --navy-dark: #34414F;
+  --navy-soft: #E7EBEF;
+  --header-start: #E4E9EE;
+  --header-end: #B7C4CD;
+  --rose: #E8749A;
+  --rose-dark: #C85778;
+  --rose-soft: #FCE7EE;
+  --teal: #2FBFAE;
+  --teal-dark: #1E9C8D;
+  --teal-soft: #DFF7F4;
+  --purple: #9B87D6;
+  --purple-dark: #7C64C4;
+  --purple-soft: #EFEAFC;
+  --amber: #E0A438;
+  --amber-dark: #B9821F;
+  --amber-soft: #FBF0DC;
+  --slate: #8A93A0;
+  --slate-soft: #EDF0F2;
+  /* legacy aliases still referenced below */
+  --accent: var(--navy);
+  --accent-dark: var(--navy-dark);
+  --accent-soft: var(--navy-soft);
+  --good: var(--teal-dark);
+  --good-soft: var(--teal-soft);
+  --warn: var(--amber-dark);
+  --warn-soft: var(--amber-soft);
+  --danger: var(--rose-dark);
+  --danger-soft: var(--rose-soft);
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  padding: 16px 16px 60px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.loading-shell { display: flex; align-items: center; justify-content: center; min-height: 60vh; }
+.loading-text { font-family: 'Fraunces', serif; font-weight: 600; color: var(--accent); display: flex; align-items: center; gap: 8px; font-size: 17px; }
+
+.app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px; margin: 0 0 14px;
+  border-radius: 20px; gap: 10px; flex-wrap: wrap;
+  background: linear-gradient(135deg, var(--header-start), var(--header-end));
+}
+.app-header-left { display: flex; align-items: center; gap: 12px; }
+.app-icon { background: #fff; color: var(--purple); width: 42px; height: 42px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 19px; box-shadow: 0 3px 8px -3px rgba(52,65,79,0.25); }
+.app-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 21px; color: var(--ink); letter-spacing: -0.3px; line-height: 1.15; }
+.app-subtitle { font-size: 12px; color: var(--ink-soft); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.save-indicator { font-size: 12px; color: var(--ink-soft); display: flex; align-items: center; gap: 4px; }
+.retry-btn { background: var(--navy); color: #fff; border: none; border-radius: 999px; padding: 5px 10px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.bell-btn { background: #fff; border: none; color: var(--navy); width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; position: relative; box-shadow: 0 3px 8px -3px rgba(52,65,79,0.25); }
+.bell-dot { position: absolute; top: 6px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--rose); border: 1.5px solid #fff; }
+
+.error-banner {
+  display: flex; align-items: center; gap: 8px; background: var(--danger-soft); border: 1px solid var(--danger);
+  color: var(--danger); border-radius: 12px; padding: 10px 14px; font-size: 12.5px; margin: 14px 0; line-height: 1.4;
+}
+.local-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: var(--warn-soft); border: 1px solid var(--warn);
+  color: #7A5B00; border-radius: 14px; padding: 12px 14px; font-size: 12.5px; margin: 14px 0; line-height: 1.4;
+}
+.local-banner-text { flex: 1; min-width: 180px; }
+.backup-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.backup-actions-inline { margin: 14px 0 0; }
+.backup-btn {
+  display: inline-flex; align-items: center; gap: 5px; background: #fff; border: 1px solid var(--line); color: var(--ink-soft);
+  border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.backup-btn:hover { border-color: var(--navy); color: var(--navy); }
+.backup-btn-primary { background: var(--navy); border-color: var(--navy); color: #fff; }
+.backup-btn-primary:hover { background: var(--navy-dark); border-color: var(--navy-dark); color: #fff; }
+.backup-btn-secondary { background: var(--purple-soft); border-color: var(--purple-soft); color: var(--purple-dark); }
+.backup-btn-secondary:hover { background: var(--purple); border-color: var(--purple); color: #fff; }
+.hidden-file-input { display: none; }
+.import-error { width: 100%; font-size: 11.5px; color: var(--danger); }
+
+.contact-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+.contact-field { display: flex; align-items: center; gap: 7px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; flex: 1; min-width: 220px; color: var(--accent); }
+.contact-input { border: none; background: transparent; outline: none; flex: 1; font-size: 13px; color: var(--ink); font-family: 'Inter', sans-serif; }
+
+/* Today dashboard */
+
+
+/* Stats dashboard tiles */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 14px; }
+.stat-tile { display: flex; flex-direction: column; gap: 8px; background: #fff; border: 1px solid var(--line); border-top: 3px solid var(--tile-color, var(--navy)); border-radius: 14px; padding: 9px 10px 11px; cursor: pointer; text-align: left; font-family: 'Inter', sans-serif; transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease; box-shadow: 0 3px 10px -4px rgba(43,51,59,0.16); }
+.stat-tile:hover { border-color: var(--ink-faint); border-top-color: var(--tile-color, var(--navy)); transform: translateY(-1px); box-shadow: 0 6px 14px -5px rgba(43,51,59,0.22); }
+.stat-tile.active { border-color: var(--tile-color, var(--navy)); background: var(--tile-soft, var(--navy-soft)); }
+.stat-icon { width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: var(--tile-soft, var(--navy-soft)); color: var(--tile-color, var(--navy)); }
+.stat-num { font-family: 'Fraunces', serif; font-weight: 700; font-size: 19px; color: var(--ink); line-height: 1; }
+.stat-label { font-size: 10.5px; color: var(--ink-soft); line-height: 1.25; }
+
+/* Notifications */
+.notif-overlay { position: fixed; inset: 0; background: rgba(30,35,45,0.42); display: flex; align-items: flex-start; justify-content: center; padding: 64px 14px 14px; z-index: 60; }
+.notif-panel { background: #fff; border-radius: 18px; width: 100%; max-width: 420px; max-height: 78vh; overflow-y: auto; box-shadow: 0 24px 60px -12px rgba(20,25,35,0.35); }
+.notif-panel-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 12px; font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; color: var(--ink); border-bottom: 1px solid var(--line); position: sticky; top: 0; background: #fff; }
+.notif-body { padding: 6px 14px 16px; }
+.notif-section { margin-top: 14px; }
+.notif-section-title { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-faint); margin-bottom: 6px; padding-left: 2px; }
+.notif-section-today .notif-section-title { color: var(--rose-dark); }
+.notif-section-soon .notif-section-title { color: var(--purple-dark); }
+.notif-section-overdue .notif-section-title { color: var(--danger, #d64545); }
+.notif-row-wrap { margin-bottom: 6px; }
+.notif-row { width: 100%; display: flex; align-items: center; gap: 10px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; cursor: pointer; text-align: left; font-family: 'Inter', sans-serif; }
+.notif-row-icon { font-size: 16px; }
+.notif-row-text { flex: 1; font-size: 13.5px; color: var(--ink); font-weight: 600; }
+.notif-row-chevron { font-size: 10px; color: var(--ink-faint); }
+.notif-detail-list { display: flex; flex-direction: column; gap: 4px; padding: 6px 4px 2px 14px; }
+.notif-detail-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: none; border: none; border-left: 2px solid var(--line); padding: 6px 0 6px 10px; font-size: 12.5px; color: var(--ink-soft); text-align: left; cursor: pointer; }
+.notif-detail-item:hover { color: var(--navy); border-left-color: var(--navy); }
+.notif-detail-date { color: var(--ink-faint); font-size: 11.5px; white-space: nowrap; }
+
+/* View toggle */
+.view-toggle { display: flex; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; }
+.view-toggle-btn { border: none; background: none; width: 32px; height: 32px; border-radius: 999px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-soft); font-size: 14px; }
+.view-toggle-btn.active { background: var(--navy); color: #fff; }
+
+/* Filter pills */
+.pill-row { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 2px; margin-bottom: 14px; -webkit-overflow-scrolling: touch; }
+.pill-row::-webkit-scrollbar { display: none; }
+.pill-btn { border: 1px solid var(--line); background: var(--bg-soft); color: var(--ink-soft); border-radius: 999px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; white-space: nowrap; cursor: pointer; font-family: 'Inter', sans-serif; }
+.pill-btn.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+/* List view rows */
+.list-col { display: flex; flex-direction: column; gap: 8px; }
+.list-row { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; cursor: pointer; text-align: left; width: 100%; font-family: 'Inter', sans-serif; border-left: 4px solid var(--stripe, var(--navy)); }
+.list-row:hover { border-color: var(--ink-faint); border-left-color: var(--stripe, var(--navy)); }
+.list-photo { width: 52px; height: 52px; border-radius: 12px; overflow: hidden; background: var(--bg-soft); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--ink-faint); }
+.list-photo img { width: 100%; height: 100%; object-fit: cover; }
+.list-body { flex: 1; min-width: 0; }
+.list-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; color: var(--ink); }
+.list-meta { font-size: 11.5px; color: var(--ink-soft); text-transform: capitalize; margin-top: 1px; }
+.list-chevron { color: var(--ink-faint); font-size: 16px; flex-shrink: 0; }
+.list-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+
+
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.search-box { display: flex; align-items: center; gap: 6px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; flex: 1; min-width: 200px; color: var(--ink-faint); }
+.search-input { border: none; background: transparent; outline: none; flex: 1; font-size: 14px; color: var(--ink); font-family: 'Inter', sans-serif; }
+
+.input {
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 10px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--ink); outline: none;
+}
+.input:focus { border-color: var(--accent); }
+.input-date { max-width: 150px; }
+.textarea { width: 100%; resize: vertical; font-family: 'Inter', sans-serif; }
+
+.add-btn {
+  display: inline-flex; align-items: center; gap: 6px; background: var(--purple-soft); border: 1px solid var(--purple-soft);
+  color: var(--purple-dark); border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: transform 0.12s ease;
+}
+.add-btn:hover { background: var(--purple); color: #fff; }
+.add-btn-primary { background: var(--purple); color: #fff; border-color: var(--purple); }
+.add-btn-primary:hover { background: var(--purple-dark); border-color: var(--purple-dark); }
+.add-btn-small { padding: 6px 11px; font-size: 12px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.kcard {
+  position: relative; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 12px 12px; cursor: pointer; border-left: 4px solid var(--stripe, var(--accent));
+  transition: transform 0.1s ease, border-color 0.1s ease;
+  font-family: 'Inter', sans-serif;
+}
+.kcard:hover { transform: translateY(-2px); border-color: var(--accent); }
+.kcard-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.kcard-number { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-faint); font-weight: 600; }
+.kcard-photo { width: 100%; aspect-ratio: 4/3; border-radius: 10px; overflow: hidden; background: var(--bg-soft); margin-bottom: 10px; display: flex; align-items: center; justify-content: center; }
+.kcard-photo img { width: 100%; height: 100%; object-fit: cover; }
+.kcard-photo-placeholder { color: var(--ink-faint); font-size: 24px; }
+.kcard-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px; margin-bottom: 4px; color: var(--ink); }
+.kcard-meta { font-size: 12px; color: var(--ink-soft); margin-bottom: 10px; text-transform: capitalize; }
+.kcard-bottom { display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap; }
+
+.chip { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 700; text-transform: uppercase; border-radius: 999px; padding: 3px 8px; letter-spacing: 0.3px; white-space: nowrap; }
+.chip-muted { background: var(--bg-soft); color: var(--ink-soft); }
+.chip-good { background: var(--good-soft); color: var(--good); }
+.chip-warn { background: var(--warn-soft); color: #8C6A1F; }
+.chip-danger { background: var(--danger-soft); color: var(--danger); }
+.chip-slate { background: var(--slate-soft); color: var(--slate); }
+.chip-accent { background: var(--accent-soft); color: var(--accent-dark); }
+.chip-navy { background: var(--navy-soft); color: var(--navy-dark); }
+.chip-rose { background: var(--rose-soft); color: var(--rose-dark); }
+.chip-teal { background: var(--teal-soft); color: var(--teal-dark); }
+.chip-purple { background: var(--purple-soft); color: var(--purple-dark); }
+
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+.detail { background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; max-width: 720px; margin: 0 auto; }
+.detail-topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+.detail-topbar-title { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; color: var(--ink); }
+.round-icon-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg-soft); border: 1px solid var(--line); color: var(--ink); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.round-icon-btn:hover { border-color: var(--navy); }
+.back-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--navy); border: none; color: #fff; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px -3px rgba(52,65,79,0.45); }
+.back-btn:hover { background: var(--navy-dark, var(--navy)); transform: translateX(-1px); }
+.back-btn:active { transform: scale(0.94); }
+
+.detail-photo-hero { position: relative; width: 100%; aspect-ratio: 4/3; background: var(--bg-soft); display: flex; align-items: center; justify-content: center; }
+.detail-photo-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.detail-photo-hero .kcard-photo-placeholder { font-size: 40px; }
+.hero-camera-btn { position: absolute; bottom: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%; background: #fff; border: none; box-shadow: 0 4px 12px rgba(43,51,59,0.18); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+.detail-body { padding: 20px; }
+.detail-headline { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.detail-name-input { font-family: 'Fraunces', serif; font-weight: 700; font-size: 24px; background: transparent; border: none; outline: none; border-bottom: 2px solid transparent; color: var(--ink); padding: 2px 0; flex: 1; min-width: 0; }
+.detail-name-input:focus { border-bottom-color: var(--navy); }
+.sex-badge { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex-shrink: 0; }
+.sex-badge-rose { background: var(--rose-soft); color: var(--rose-dark); }
+.sex-badge-navy { background: var(--navy-soft); color: var(--navy-dark); }
+.sex-badge-slate { background: var(--slate-soft); color: var(--slate); }
+
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-label { font-size: 11px; color: var(--ink); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.75; }
+.ster-readout { display: flex; align-items: center; height: 38px; }
+
+.section { margin-top: 14px; padding: 16px 14px 18px; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 2px 8px -4px rgba(43,51,59,0.1); }
+.section:first-child { margin-top: 14px; }
+.section-title { display: flex; align-items: center; gap: 6px; font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px; color: var(--ink); margin-bottom: 12px; }
+.ster-hint { font-size: 11.5px; color: var(--ink-soft); margin-top: 8px; font-style: italic; }
+
+.log-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.log-row { display: flex; align-items: center; gap: 8px; background: var(--bg-soft); border-radius: 10px; padding: 8px 10px; font-size: 13px; flex-wrap: wrap; }
+.log-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); white-space: nowrap; }
+.log-tag { font-size: 11px; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 999px; white-space: nowrap; font-weight: 600; }
+.log-text { flex: 1; color: var(--ink); min-width: 100px; }
+.log-sub { font-size: 11.5px; color: var(--ink-soft); width: 100%; }
+.icon-btn { background: none; border: none; color: var(--ink-faint); cursor: pointer; padding: 2px; display: flex; font-size: 13px; }
+.icon-btn:hover { color: var(--danger); }
+.empty-hint { font-size: 12px; color: var(--ink-faint); font-style: italic; }
+
+.add-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.add-row-wrap .input { flex: 1; min-width: 120px; }
+
+.traits-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+.trait-toggle { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); background: #fff; color: var(--ink-soft); border-radius: 999px; padding: 6px 12px; font-size: 12.5px; cursor: pointer; font-family: 'Inter', sans-serif; }
+.trait-toggle.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-dark); font-weight: 600; }
+
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; margin-bottom: 10px; }
+.photo-tile { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--bg-soft); border: 1px solid var(--line); }
+.photo-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-tile-actions { position: absolute; top: 4px; right: 4px; display: flex; gap: 4px; }
+.photo-tile-btn { background: rgba(36,31,27,0.65); color: #fff; border: none; border-radius: 6px; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.photo-tile-main { position: absolute; bottom: 4px; left: 4px; background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; text-transform: uppercase; border-radius: 6px; padding: 2px 6px; }
+
+.doc-row { display: flex; align-items: center; gap: 8px; background: var(--bg-soft); border-radius: 10px; padding: 9px 10px; font-size: 13px; margin-bottom: 6px; flex-wrap: wrap; }
+.doc-link { color: var(--accent); font-weight: 600; text-decoration: none; }
+.doc-link:hover { text-decoration: underline; }
+
+.hint-box { background: var(--bg-soft); border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--ink-soft); line-height: 1.5; margin-bottom: 12px; }
+
+.danger-zone { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line); }
+.delete-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; background: var(--danger); border: none; color: #fff; border-radius: 999px; padding: 13px 14px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.delete-btn:hover { background: var(--rose-dark); }
+.confirm-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--danger); }
+.delete-btn-confirm { background: var(--danger); color: #fff; border: none; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.cancel-btn { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer; color: var(--ink); }
+
+.has-bottom-nav { padding-bottom: 96px; }
+.bottom-nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+  background: #fff; border-top: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+  max-width: 720px; margin: 0 auto;
+  box-shadow: 0 -6px 16px -10px rgba(43,51,59,0.18);
+}
+.bottom-nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: none; border: none; color: var(--ink-soft); font-size: 10.5px; font-weight: 600;
+  cursor: pointer; padding: 4px 14px; font-family: 'Inter', sans-serif;
+}
+.bottom-nav-item.active { color: var(--rose-dark); }
+.bottom-nav-icon { font-size: 19px; }
+.bottom-nav-add {
+  width: 52px; height: 52px; border-radius: 50%; background: var(--rose); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 22px; border: none;
+  cursor: pointer; margin-top: -30px; box-shadow: 0 8px 18px -6px rgba(232,116,154,0.6);
+  flex-shrink: 0;
+}
+.active-due-note {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  background: var(--rose-soft); color: var(--rose-dark); border-radius: 10px;
+  padding: 8px 12px; font-size: 12px; margin-bottom: 12px;
+}
+.clear-due-btn { background: none; border: none; color: var(--rose-dark); font-size: 12px; font-weight: 700; cursor: pointer; }
+
+@media (max-width: 480px) {
+  .app-title { font-size: 19.5px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  window.addEventListener("error", function (e) {
+    var root = document.getElementById("root");
+    if (root && !root.hasChildNodes()) {
+      var stack = (e.error && e.error.stack) ? e.error.stack : "";
+      var fails = window.__loadFails && window.__loadFails.length
+        ? '<br><br><b>Не загрузились файлы:</b> ' + window.__loadFails.join(", ")
+        : '';
+      root.innerHTML =
+        '<div style="font-family: sans-serif; padding: 20px; color: #a33; background: #fff3f3; margin: 16px; border-radius: 12px; line-height:1.5; white-space: pre-wrap; word-break: break-word;">' +
+        '<b>Ошибка загрузки приложения</b><br><br>' +
+        (e.message || "Неизвестная ошибка") +
+        fails +
+        '<br><br><span style="color:#888; font-size: 13px;">Файл: ' + (e.filename || "?") + ", строка " + (e.lineno || "?") + '</span>' +
+        (stack ? '<br><br><span style="color:#888; font-size: 12px;">' + stack + '</span>' : '') +
+        '</div>';
+    }
+  });
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      var root = document.getElementById("root");
+      if (root && !root.hasChildNodes()) {
+        var fails = window.__loadFails && window.__loadFails.length
+          ? '<br><br><b>Не загрузились файлы:</b> ' + window.__loadFails.join(", ")
+          : '<br><br>Явной ошибки не зафиксировано — вероятно, проблема в самом коде приложения (ошибка при разборе/сборке скрипта). Пришлите этот текст разработчику.';
+        root.innerHTML =
+          '<div style="font-family: sans-serif; padding: 20px; color: #a33; background: #fff3f3; margin: 16px; border-radius: 12px; line-height:1.5;">' +
+          '<b>Приложение не открылось</b>' + fails + '</div>';
+      }
+    }, 3000);
+  });
+</script>
+<script type="text/babel">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDsfyI5kGKatp36bzDLn81X7ONHhqfCrbQ",
+  authDomain: "dog-tracker-778c0.firebaseapp.com",
+  projectId: "dog-tracker-778c0",
+  storageBucket: "dog-tracker-778c0.firebasestorage.app",
+  messagingSenderId: "1022922333620",
+  appId: "1:1022922333620:web:074273a9c295861f1ae6e1"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+let storage = null;
+try {
+  if (firebase.storage) storage = firebase.storage();
+} catch (e) {
+  console.error("Firebase Storage недоступен:", e);
+}
+const DOC_REF = db.collection("kartoteka").doc("main");
+
+const SEX_OPTIONS = ["неизвестно", "кобель", "сука"];
+const STATUS_OPTIONS = ["в приюте", "уличные", "на лечении", "пристроен"];
+const STATUS_COLORS = {
+  "в приюте": "var(--navy)",
+  "уличные": "var(--slate)",
+  "на лечении": "var(--purple)",
+  "пристроен": "var(--rose)",
+};
+const STATUS_CHIP_TONE = {
+  "в приюте": "navy",
+  "уличные": "slate",
+  "на лечении": "purple",
+  "пристроен": "rose",
+};
+const PARASITE_TYPES = ["от глистов", "от блох/клещей"];
+const TRAIT_OPTIONS = [
+  "ласковый", "активный", "спокойный", "дружит с собаками", "не дружит с кошками",
+  "хорошо с детьми", "боится громких звуков", "нельзя без поводка", "пугливый", "требует опыта",
+];
+const EMPTY_META = { city: "", contact: "" };
+
+function pad(n) { return String(n).padStart(3, "0"); }
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+function uid(prefix) { return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`; }
+
+// Превращает обычную ссылку "поделиться" с Google Диска в прямую ссылку на картинку.
+// Понимает форматы: /file/d/ID/view, ?id=ID, /open?id=ID, uc?id=ID, thumbnail?id=ID.
+// Остальные ссылки (не Google Drive) возвращает как есть.
+function normalizePhotoUrl(raw) {
+  const url = (raw || "").trim();
+  if (!url) return url;
+  const match =
+    url.match(/drive\.google\.com\/file\/d\/([^/]+)/) ||
+    url.match(/[?&]id=([^&]+)/);
+  if (match && url.includes("drive.google.com")) {
+    const fileId = match[1];
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+  }
+  return url;
+}
+
+// Загружает файл в Firebase Storage и возвращает промис с прямой ссылкой на скачивание.
+// folder — подпапка (например "photos" или "documents"), onProgress(0-100) — необязательный колбэк.
+function uploadFileToStorage(file, folder, onProgress) {
+  return new Promise((resolve, reject) => {
+    if (!storage) {
+      reject(new Error("Firebase Storage не инициализирован"));
+      return;
+    }
+    const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+    const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safeName}`;
+    const task = storage.ref(path).put(file);
+    task.on(
+      "state_changed",
+      (snap) => {
+        if (onProgress) onProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100));
+      },
+      (err) => reject(err),
+      () => task.snapshot.ref.getDownloadURL().then(resolve).catch(reject)
+    );
+  });
+}
+
+function blankDog(num) {
+  return {
+    id: `dog-${Date.now()}-${num}`,
+    number: pad(num),
+    name: `Щенок №${num}`,
+    sex: "неизвестно",
+    color: "",
+    status: "в приюте",
+    arrivalDate: "",
+    arrivalSource: "",
+    ageEntries: [],
+    medicalLog: [],
+    treatmentCourses: [],
+    photos: [],
+    documents: [],
+    traits: [],
+    notes: "",
+    migratedV3: true,
+    createdAt: todayISO(),
+  };
+}
+
+function seedDogs(count) {
+  const dogs = [];
+  for (let i = 1; i <= count; i++) dogs.push(blankDog(i));
+  return dogs;
+}
+
+function fmtDate(d) {
+  if (!d) return "";
+  const [y, m, day] = d.split("-");
+  const months = ["янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+  return `${day} ${months[parseInt(m, 10) - 1]} ${y}`;
+}
+
+// migrates any older card shape (pre-tabs, unified "treatments" log, "в передержке" status, etc.)
+// into the current schema without losing anything already recorded.
+function fixRetiredStatus(status) {
+  if (status === "в передержке" || status === "на передержке") return "в приюте";
+  return status || "в приюте";
+}
+
+function migrateDog(d) {
+  if (d.migratedV3) {
+    return {
+      medicalLog: [], treatmentCourses: [], photos: [], documents: [], traits: [],
+      ...d,
+      status: fixRetiredStatus(d.status),
+    };
+  }
+  let vaccinations = d.vaccinations || [];
+  let parasites = d.parasites || [];
+  let sterilizations = d.sterilizations || [];
+  let otherMedEvents = d.otherMedEvents || [];
+  if (!d.migratedV2) {
+    const legacy = d.treatments || [];
+    vaccinations = legacy.filter((t) => t.type === "Вакцинация").map((t) => ({
+      id: t.id, date: t.date, name: t.note || "Вакцинация", nextDate: "", vet: "",
+    }));
+    parasites = legacy.filter((t) => t.type === "От глистов" || t.type === "От блох/клещей").map((t) => ({
+      id: t.id, date: t.date, type: t.type === "От глистов" ? "от глистов" : "от блох/клещей", product: t.note || "", nextDate: "",
+    }));
+    sterilizations = legacy.filter((t) => t.type === "Стерилизация").map((t) => ({
+      id: t.id, date: t.date, note: t.note || "",
+    }));
+    otherMedEvents = legacy.filter((t) => !["Вакцинация", "От глистов", "От блох/клещей", "Стерилизация"].includes(t.type)).map((t) => ({
+      id: t.id, date: t.date, type: t.type, note: t.note || "",
+    }));
+    if (d.sterilized && d.sterilized !== "не стерилизован(а)" && sterilizations.length === 0) {
+      sterilizations.push({
+        id: uid("st"), date: d.createdAt || todayISO(),
+        note: d.sterilized === "запланирована" ? "запланирована (перенесено со старой карточки)" : "перенесено со старой карточки",
+      });
+    }
+  }
+  const medicalLog = [
+    ...vaccinations.map((v) => ({ id: v.id, date: v.date, type: "Вакцинация", note: [v.name, v.vet].filter(Boolean).join(" · "), nextDate: v.nextDate || "" })),
+    ...parasites.map((p) => ({ id: p.id, date: p.date, type: p.type === "от глистов" ? "От глистов" : "От блох/клещей", note: p.product || "", nextDate: p.nextDate || "" })),
+    ...sterilizations.map((s) => ({ id: s.id, date: s.date, type: "Стерилизация", note: s.note || "", nextDate: "" })),
+    ...otherMedEvents.map((o) => ({ id: o.id, date: o.date, type: o.type || "Другое", note: o.note || "", nextDate: "" })),
+    ...(d.medicalLog || []),
+  ];
+  const {
+    sterilized, treatments, city, contact, migratedV2,
+    vaccinations: _v, parasites: _p, sterilizations: _s, otherMedEvents: _o,
+    ...rest
+  } = d;
+  const status = fixRetiredStatus(d.status);
+  return {
+    ...rest, status, medicalLog, treatmentCourses: d.treatmentCourses || [],
+    photos: d.photos || [], documents: d.documents || [], traits: d.traits || [],
+    migratedV3: true,
+  };
+}
+
+function normalizeLoaded(parsed) {
+  let rawDogs, meta;
+  if (Array.isArray(parsed)) { rawDogs = parsed; meta = { ...EMPTY_META }; }
+  else { rawDogs = parsed.dogs || []; meta = { ...EMPTY_META, ...(parsed.meta || {}) }; }
+  const dogs = rawDogs.map(migrateDog);
+  return { meta, dogs };
+}
+
+function useDB() {
+  const [dogs, setDogs] = useState(null);
+  const [meta, setMeta] = useState(EMPTY_META);
+  const [loading, setLoading] = useState(true);
+  const [saveState, setSaveState] = useState("idle");
+  const [storageAvailable, setStorageAvailable] = useState(true);
+  const latest = useRef(null);
+  const seeding = useRef(false);
+
+  const persist = useCallback((next) => {
+    latest.current = next;
+    setDogs(next.dogs);
+    setMeta(next.meta);
+    setSaveState("saving");
+    DOC_REF.set(next)
+      .then(() => {
+        setSaveState("saved");
+        setTimeout(() => setSaveState((s) => (s === "saved" ? "idle" : s)), 1200);
+      })
+      .catch((e) => { console.error("Не удалось сохранить в общую базу:", e); setSaveState("error"); });
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = DOC_REF.onSnapshot(
+      (snap) => {
+        setStorageAvailable(true);
+        if (snap.exists) {
+          const loaded = normalizeLoaded(snap.data());
+          latest.current = loaded;
+          setDogs(loaded.dogs);
+          setMeta(loaded.meta);
+        } else if (!seeding.current) {
+          seeding.current = true;
+          const seeded = { meta: { ...EMPTY_META }, dogs: seedDogs(70) };
+          latest.current = seeded;
+          setDogs(seeded.dogs);
+          setMeta(seeded.meta);
+          DOC_REF.set(seeded).catch((e) => console.error("Не удалось создать начальную базу:", e));
+        }
+        setLoading(false);
+      },
+      (err) => {
+        console.error("Firestore недоступен:", err);
+        setStorageAvailable(false);
+        setSaveState("local");
+        if (!latest.current) {
+          const seeded = { meta: { ...EMPTY_META }, dogs: seedDogs(70) };
+          latest.current = seeded;
+          setDogs(seeded.dogs);
+          setMeta(seeded.meta);
+        }
+        setLoading(false);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
+
+  const retry = useCallback(() => { if (latest.current) persist(latest.current); }, [persist]);
+  const loadFromBackup = useCallback((parsed) => persist(normalizeLoaded(parsed)), [persist]);
+  return { dogs, meta, loading, persist, saveState, retry, storageAvailable, loadFromBackup };
+}
+
+function Chip({ children, tone = "muted" }) {
+  return <span className={`chip chip-${tone}`}>{children}</span>;
+}
+
+function lastSterilization(dog) {
+  const entries = (dog.medicalLog || []).filter((e) => e.type === "Стерилизация");
+  return entries.length ? entries[entries.length - 1] : null;
+}
+function mainPhoto(dog) {
+  const photos = dog.photos || [];
+  if (!photos.length) return null;
+  return photos.find((p) => p.id === dog.mainPhotoId) || photos[0];
+}
+function isOverdueOrDueSoon(dateStr, daysAhead = 3) {
+  if (!dateStr) return false;
+  const target = new Date(dateStr);
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() + daysAhead);
+  return target <= cutoff;
+}
+function vaccinationDue(dog) {
+  return (dog.medicalLog || []).some((e) => e.type === "Вакцинация" && isOverdueOrDueSoon(e.nextDate));
+}
+function parasiteDue(dog) {
+  return (dog.medicalLog || []).some((e) => (e.type === "От глистов" || e.type === "От блох/клещей") && isOverdueOrDueSoon(e.nextDate));
+}
+function hasActiveTreatment(dog) {
+  const today = todayISO();
+  return (dog.treatmentCourses || []).some((c) => !c.endDate || c.endDate >= today);
+}
+function collectNotifications(dogs) {
+  const today = todayISO();
+  const future = new Date();
+  future.setDate(future.getDate() + 7);
+  const in7 = future.toISOString().slice(0, 10);
+  const buckets = { overdue: [], today: [], soon: [] };
+  const classify = (dateStr) => {
+    if (!dateStr) return null;
+    if (dateStr < today) return "overdue";
+    if (dateStr === today) return "today";
+    if (dateStr <= in7) return "soon";
+    return null;
+  };
+  const CATEGORY_LABEL = {
+    vaccination: { one: "вакцинация", few: "вакцинации", many: "вакцинаций", icon: "💉" },
+    parasite: { one: "обработка", few: "обработки", many: "обработок", icon: "🧴" },
+    vetcheck: { one: "ветеринарный контроль", few: "ветеринарных контроля", many: "ветеринарных контролей", icon: "🩺" },
+    course: { one: "курс лекарств заканчивается", few: "курса лекарств заканчиваются", many: "курсов лекарств заканчивается", icon: "💊" },
+  };
+  (dogs || []).forEach((dog) => {
+    (dog.medicalLog || []).forEach((e) => {
+      const bucket = classify(e.nextDate);
+      if (!bucket) return;
+      let category = null;
+      if (e.type === "Вакцинация") category = "vaccination";
+      else if (e.type === "От глистов" || e.type === "От блох/клещей") category = "parasite";
+      else if (e.type === "Ветосмотр") category = "vetcheck";
+      if (!category) return;
+      buckets[bucket].push({ dogId: dog.id, dogName: dog.name, dogNumber: dog.number, category, date: e.nextDate });
+    });
+    (dog.treatmentCourses || []).forEach((c) => {
+      const bucket = classify(c.endDate);
+      if (!bucket) return;
+      buckets[bucket].push({ dogId: dog.id, dogName: dog.name, dogNumber: dog.number, category: "course", date: c.endDate });
+    });
+  });
+  const summarize = (items) => {
+    const byCategory = {};
+    items.forEach((it) => {
+      if (!byCategory[it.category]) byCategory[it.category] = [];
+      byCategory[it.category].push(it);
+    });
+    return Object.keys(byCategory).map((cat) => ({
+      category: cat,
+      label: CATEGORY_LABEL[cat],
+      items: byCategory[cat],
+      count: byCategory[cat].length,
+    }));
+  };
+  const total = buckets.overdue.length + buckets.today.length + buckets.soon.length;
+  return {
+    total,
+    overdue: summarize(buckets.overdue),
+    today: summarize(buckets.today),
+    soon: summarize(buckets.soon),
+  };
+}
+function pluralRu(n, forms) {
+  const n10 = n % 10, n100 = n % 100;
+  if (n10 === 1 && n100 !== 11) return forms.one;
+  if (n10 >= 2 && n10 <= 4 && (n100 < 10 || n100 >= 20)) return forms.few;
+  return forms.many;
+}
+function recordCount(dog) {
+  return (dog.medicalLog || []).length + (dog.treatmentCourses || []).length;
+}
+
+function DogCard({ dog, index, onOpen }) {
+  const ster = lastSterilization(dog);
+  const photo = mainPhoto(dog);
+  const stripe = ROW_STRIPE_CYCLE[index % ROW_STRIPE_CYCLE.length];
+  const count = recordCount(dog);
+  return (
+    <button className="kcard" style={{ "--stripe": stripe }} onClick={() => onOpen(dog.id)}>
+      <div className="kcard-photo">
+        {photo ? <img src={normalizePhotoUrl(photo.url)} alt={dog.name} /> : <span className="kcard-photo-placeholder">🐾</span>}
+      </div>
+      <div className="kcard-top">
+        <span className="kcard-number">№{dog.number}</span>
+        {count > 0 ? <Chip tone="good">{count} записей</Chip> : <Chip tone="muted">нет записей</Chip>}
+      </div>
+      <div className="kcard-name">{dog.name}</div>
+      <div className="kcard-meta">
+        <span>{dog.sex}</span>{dog.color && <span> · {dog.color}</span>}
+      </div>
+      <div className="kcard-bottom">
+        <Chip tone={STATUS_CHIP_TONE[dog.status] || "muted"}>{dog.status}</Chip>
+        <Chip tone={ster ? "good" : "muted"}>{ster ? "стерил." : "не стерил."}</Chip>
+      </div>
+    </button>
+  );
+}
+
+const ROW_STRIPE_CYCLE = ["var(--navy)", "var(--teal)", "var(--rose)", "var(--purple)", "var(--amber)", "var(--slate)"];
+
+function DogListRow({ dog, index, onOpen }) {
+  const photo = mainPhoto(dog);
+  const count = recordCount(dog);
+  const stripe = ROW_STRIPE_CYCLE[index % ROW_STRIPE_CYCLE.length];
+  return (
+    <button className="list-row" style={{ "--stripe": stripe }} onClick={() => onOpen(dog.id)}>
+      <div className="list-photo">{photo ? <img src={normalizePhotoUrl(photo.url)} alt={dog.name} /> : "🐾"}</div>
+      <div className="list-body">
+        <div className="list-name">№{dog.number} · {dog.name}</div>
+        <div className="list-meta">{dog.sex}{dog.color ? ` · ${dog.color}` : ""}</div>
+      </div>
+      <div className="list-right">
+        <Chip tone={STATUS_CHIP_TONE[dog.status] || "muted"}>{dog.status}</Chip>
+        <Chip tone={count > 0 ? "good" : "muted"}>{count > 0 ? `${count} записей` : "нет записей"}</Chip>
+      </div>
+      <span className="list-chevron">›</span>
+    </button>
+  );
+}
+
+function Field({ label, children }) {
+  return <label className="field"><span className="field-label">{label}</span>{children}</label>;
+}
+
+/* ---------- Unified medical log (matches reference design) ---------- */
+
+const MEDICAL_TYPES = ["Вакцинация", "От глистов", "От блох/клещей", "Стерилизация", "Ветосмотр", "Другое"];
+const MEDICAL_TYPE_TONE = {
+  "Вакцинация": "navy", "От глистов": "teal", "От блох/клещей": "teal",
+  "Стерилизация": "rose", "Ветосмотр": "purple", "Другое": "muted",
+};
+const NEXT_DATE_TYPES = ["Вакцинация", "От глистов", "От блох/клещей"];
+
+function MedicalLogSection({ list, onAdd, onRemove }) {
+  const [date, setDate] = useState(todayISO());
+  const [type, setType] = useState(MEDICAL_TYPES[0]);
+  const [note, setNote] = useState("");
+  const [nextDate, setNextDate] = useState("");
+  const showNextDate = NEXT_DATE_TYPES.includes(type);
+  const add = () => {
+    onAdd({ id: uid("m"), date, type, note: note.trim(), nextDate: showNextDate ? nextDate : "" });
+    setNote(""); setNextDate("");
+  };
+  return (
+    <div className="section">
+      <div className="section-title">💉 Прививки, обработки и стерилизация</div>
+      <div className="log-list">
+        {list.length === 0 && <div className="empty-hint">Записей ещё нет.</div>}
+        {list.slice().reverse().map((e) => (
+          <div key={e.id} className="log-row">
+            <span className="log-date">{fmtDate(e.date)}</span>
+            <span className={`chip chip-${MEDICAL_TYPE_TONE[e.type] || "muted"}`}>{e.type}</span>
+            {e.note && <span className="log-text">{e.note}</span>}
+            {e.nextDate && (
+              <span className={isOverdueOrDueSoon(e.nextDate) ? "chip chip-warn" : "chip chip-muted"}>
+                след. {fmtDate(e.nextDate)}
+              </span>
+            )}
+            <button className="icon-btn" onClick={() => onRemove(e.id)}>✕</button>
+          </div>
+        ))}
+      </div>
+      <div className="add-row add-row-wrap">
+        <input type="date" className="input input-date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <select className="input" value={type} onChange={(e) => setType(e.target.value)}>
+          {MEDICAL_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+        </select>
+        {showNextDate && (
+          <Field label="след. раз"><input type="date" className="input input-date" value={nextDate} onChange={(e) => setNextDate(e.target.value)} /></Field>
+        )}
+      </div>
+      <div className="add-row">
+        <input className="input" placeholder="Заметка (препарат, доза, клиника)" value={note} onChange={(e) => setNote(e.target.value)} />
+        <button className="add-btn add-btn-small" onClick={add}>➕ Добавить</button>
+      </div>
+    </div>
+  );
+}
+
+function TreatmentCourseSection({ list, onAdd, onRemove }) {
+  const [diagnosis, setDiagnosis] = useState("");
+  const [medication, setMedication] = useState("");
+  const [startDate, setStartDate] = useState(todayISO());
+  const [endDate, setEndDate] = useState("");
+  const add = () => {
+    if (!diagnosis.trim()) return;
+    onAdd({ id: uid("c"), diagnosis: diagnosis.trim(), medication: medication.trim(), startDate, endDate });
+    setDiagnosis(""); setMedication(""); setEndDate("");
+  };
+  const today = todayISO();
+  return (
+    <div className="section">
+      <div className="section-title">🩺 Лечение</div>
+      <div className="log-list">
+        {list.length === 0 && <div className="empty-hint">Активных курсов нет.</div>}
+        {list.slice().reverse().map((c) => {
+          const active = !c.endDate || c.endDate >= today;
+          return (
+            <div key={c.id} className="log-row">
+              <span className={active ? "chip chip-warn" : "chip chip-muted"}>{active ? "лечится" : "завершено"}</span>
+              <span className="log-text">{c.diagnosis}{c.medication ? ` · ${c.medication}` : ""}</span>
+              <span className="log-sub">{fmtDate(c.startDate)}{c.endDate ? ` — ${fmtDate(c.endDate)}` : " — по сей день"}</span>
+              <button className="icon-btn" onClick={() => onRemove(c.id)}>✕</button>
+            </div>
+          );
+        })}
+      </div>
+      <div className="add-row add-row-wrap">
+        <input className="input" placeholder="диагноз" value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} />
+        <input className="input" placeholder="препарат / дозировка" value={medication} onChange={(e) => setMedication(e.target.value)} />
+        <Field label="начало"><input type="date" className="input input-date" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></Field>
+        <Field label="окончание"><input type="date" className="input input-date" value={endDate} onChange={(e) => setEndDate(e.target.value)} /></Field>
+        <button className="add-btn add-btn-small" onClick={add}>➕ Добавить</button>
+      </div>
+    </div>
+  );
+}
+
+function PhotosSection({ photos, mainPhotoId, onAdd, onRemove, onSetMain }) {
+  const [url, setUrl] = useState("");
+  const [uploading, setUploading] = useState(null);
+  const fileInputRef = useRef(null);
+  const add = () => {
+    if (!url.trim()) return;
+    onAdd({ id: uid("ph"), url: normalizePhotoUrl(url) });
+    setUrl("");
+  };
+  const handleFilePick = (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploading(0);
+    uploadFileToStorage(file, "photos", setUploading)
+      .then((downloadUrl) => {
+        onAdd({ id: uid("ph"), url: downloadUrl });
+        setUploading(null);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Не удалось загрузить фото. Проверьте интернет и попробуйте снова.");
+        setUploading(null);
+      });
+  };
+  return (
+    <div className="section">
+      <div className="section-title">📷 Фото</div>
+      <div className="hint-box">Можно загрузить фото прямо с телефона, либо вставить ссылку (например, с Google Диска — она сама преобразуется в рабочую картинку; доступ должен быть «Всем, у кого есть ссылка»).</div>
+      <div className="photo-grid">
+        {photos.map((p) => (
+          <div key={p.id} className="photo-tile">
+            <img src={normalizePhotoUrl(p.url)} alt="" />
+            {p.id === mainPhotoId && <span className="photo-tile-main">главное</span>}
+            <div className="photo-tile-actions">
+              {p.id !== mainPhotoId && <button className="photo-tile-btn" onClick={() => onSetMain(p.id)} title="сделать главным">★</button>}
+              <button className="photo-tile-btn" onClick={() => onRemove(p.id)} title="удалить">✕</button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="add-row">
+        <input type="file" accept="image/*" ref={fileInputRef} style={{ display: "none" }} onChange={handleFilePick} />
+        <button className="add-btn add-btn-small" onClick={() => fileInputRef.current.click()} disabled={uploading !== null}>
+          {uploading !== null ? `Загрузка ${uploading}%…` : "📱 Загрузить с телефона"}
+        </button>
+      </div>
+      <div className="add-row">
+        <input className="input" placeholder="или ссылка на фото (https://...)" value={url} onChange={(e) => setUrl(e.target.value)} />
+        <button className="add-btn add-btn-small" onClick={add}>➕ Добавить</button>
+      </div>
+    </div>
+  );
+}
+
+function DocumentsSection({ documents, onAdd, onRemove }) {
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+  const [date, setDate] = useState(todayISO());
+  const [uploading, setUploading] = useState(null);
+  const fileInputRef = useRef(null);
+  const add = () => {
+    if (!title.trim() || !url.trim()) return;
+    onAdd({ id: uid("d"), title: title.trim(), url: url.trim(), date });
+    setTitle(""); setUrl("");
+  };
+  const handleFilePick = (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    const docTitle = title.trim() || file.name;
+    setUploading(0);
+    uploadFileToStorage(file, "documents", setUploading)
+      .then((downloadUrl) => {
+        onAdd({ id: uid("d"), title: docTitle, url: downloadUrl, date });
+        setTitle("");
+        setUploading(null);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Не удалось загрузить документ. Проверьте интернет и попробуйте снова.");
+        setUploading(null);
+      });
+  };
+  return (
+    <div className="section">
+      <div className="section-title">📄 Документы</div>
+      <div className="hint-box">Ветпаспорт, анализы, УЗИ, договоры — можно загрузить файл прямо с телефона (укажите название ниже перед загрузкой) или вставить ссылку на файл в облаке.</div>
+      <div className="log-list">
+        {documents.length === 0 && <div className="empty-hint">Документов пока нет.</div>}
+        {documents.slice().reverse().map((d) => (
+          <div key={d.id} className="doc-row">
+            <span className="log-date">{fmtDate(d.date)}</span>
+            <a className="doc-link" href={d.url} target="_blank" rel="noreferrer">{d.title}</a>
+            <button className="icon-btn" onClick={() => onRemove(d.id)}>✕</button>
+          </div>
+        ))}
+      </div>
+      <div className="add-row add-row-wrap">
+        <input type="date" className="input input-date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <input className="input" placeholder="название (напр. ветпаспорт)" value={title} onChange={(e) => setTitle(e.target.value)} />
+      </div>
+      <div className="add-row">
+        <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleFilePick} />
+        <button className="add-btn add-btn-small" onClick={() => fileInputRef.current.click()} disabled={uploading !== null}>
+          {uploading !== null ? `Загрузка ${uploading}%…` : "📱 Загрузить файл с телефона"}
+        </button>
+      </div>
+      <div className="add-row">
+        <input className="input" placeholder="или ссылка на файл" value={url} onChange={(e) => setUrl(e.target.value)} />
+        <button className="add-btn add-btn-small" onClick={add}>➕ Добавить по ссылке</button>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Dog detail with tabs ---------- */
+
+function DogDetail({ dog, onBack, onUpdate, onDelete }) {
+  const [local, setLocal] = useState(dog);
+  const [newAge, setNewAge] = useState("");
+  const [newAgeDate, setNewAgeDate] = useState(todayISO());
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const debounceTimers = useRef({});
+
+  useEffect(() => { setLocal(dog); }, [dog.id]);
+  useEffect(() => () => { Object.values(debounceTimers.current).forEach((t) => t && t.flush && t.flush()); }, []);
+
+  const commitNow = (patch) => { const next = { ...local, ...patch }; setLocal(next); onUpdate(next); };
+  const commitDebounced = (key, patch, delay = 500) => {
+    const next = { ...local, ...patch };
+    setLocal(next);
+    if (debounceTimers.current[key]) clearTimeout(debounceTimers.current[key].id);
+    const id = setTimeout(() => onUpdate(next), delay);
+    debounceTimers.current[key] = { id, flush: () => onUpdate(next) };
+  };
+  const handleBack = () => { Object.values(debounceTimers.current).forEach((t) => t && t.flush && t.flush()); onBack(); };
+
+  const addAge = () => {
+    if (!newAge.trim()) return;
+    commitNow({ ageEntries: [...local.ageEntries, { id: uid("a"), date: newAgeDate, note: newAge.trim() }] });
+    setNewAge("");
+  };
+  const removeAge = (id) => commitNow({ ageEntries: local.ageEntries.filter((e) => e.id !== id) });
+
+  const addTo = (key) => (entry) => commitNow({ [key]: [...(local[key] || []), entry] });
+  const removeFrom = (key) => (id) => commitNow({ [key]: (local[key] || []).filter((e) => e.id !== id) });
+
+  const toggleTrait = (t) => {
+    const has = (local.traits || []).includes(t);
+    commitNow({ traits: has ? local.traits.filter((x) => x !== t) : [...(local.traits || []), t] });
+  };
+
+  const removePhoto = (id) => {
+    const photos = (local.photos || []).filter((p) => p.id !== id);
+    const patch = { photos };
+    if (local.mainPhotoId === id) patch.mainPhotoId = photos[0] ? photos[0].id : null;
+    commitNow(patch);
+  };
+  const heroFileInputRef = useRef(null);
+  const [heroUploading, setHeroUploading] = useState(false);
+  const addPhotoFromHero = () => {
+    heroFileInputRef.current && heroFileInputRef.current.click();
+  };
+  const handleHeroFilePick = (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    setHeroUploading(true);
+    uploadFileToStorage(file, "photos")
+      .then((downloadUrl) => {
+        const p = { id: uid("ph"), url: downloadUrl };
+        commitNow({ photos: [...(local.photos || []), p], mainPhotoId: local.mainPhotoId || p.id });
+        setHeroUploading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Не удалось загрузить фото. Проверьте интернет и попробуйте снова.");
+        setHeroUploading(false);
+      });
+  };
+
+  const ster = lastSterilization(local);
+  const photo = mainPhoto(local);
+  const sexIcon = local.sex === "сука" ? "♀" : local.sex === "кобель" ? "♂" : "•";
+  const sexTone = local.sex === "сука" ? "rose" : local.sex === "кобель" ? "navy" : "slate";
+
+  return (
+    <div className="detail">
+      <div className="detail-topbar">
+        <button className="back-btn" onClick={handleBack} title="Назад">‹</button>
+        <span className="detail-topbar-title">Карточка №{local.number}</span>
+        <button className="round-icon-btn" title="Ещё">⋮</button>
+      </div>
+
+      <div className="detail-photo-hero">
+        {photo ? <img src={normalizePhotoUrl(photo.url)} alt="" /> : <span className="kcard-photo-placeholder">🐾</span>}
+        <input type="file" accept="image/*" ref={heroFileInputRef} style={{ display: "none" }} onChange={handleHeroFilePick} />
+        <button className="hero-camera-btn" onClick={addPhotoFromHero} title="Добавить фото" disabled={heroUploading}>{heroUploading ? "…" : "📷"}</button>
+      </div>
+
+      <div className="detail-body">
+        <div className="detail-headline">
+          <input
+            className="detail-name-input"
+            defaultValue={local.name}
+            onChange={(e) => commitDebounced("name", { name: e.target.value })}
+            onBlur={() => debounceTimers.current.name && debounceTimers.current.name.flush()}
+            placeholder="Кличка"
+          />
+          <span className={`sex-badge sex-badge-${sexTone}`}>{sexIcon}</span>
+        </div>
+
+        <div className="detail-grid">
+          <Field label="Пол">
+            <select className="input" value={local.sex} onChange={(e) => commitNow({ sex: e.target.value })}>
+              {SEX_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </Field>
+          <Field label="Окрас">
+            <input className="input" defaultValue={local.color} onChange={(e) => commitDebounced("color", { color: e.target.value })} onBlur={() => debounceTimers.current.color && debounceTimers.current.color.flush()} placeholder="напр. чёрно-белый" />
+          </Field>
+          <Field label="Статус">
+            <select className="input" value={local.status} onChange={(e) => commitNow({ status: e.target.value })}>
+              {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </Field>
+          <Field label="Стерилизация">
+            <div className="ster-readout">
+              {ster ? <Chip tone="good">стерилизован(а) · {fmtDate(ster.date)}</Chip> : <Chip tone="muted">не стерилизован(а)</Chip>}
+            </div>
+          </Field>
+        </div>
+
+        <section className="section">
+          <div className="section-title">📥 Откуда прибыл(а) и когда</div>
+          <div className="add-row">
+            <input
+              type="date"
+              className="input input-date"
+              defaultValue={local.arrivalDate || ""}
+              onChange={(e) => commitDebounced("arrivalDate", { arrivalDate: e.target.value })}
+              onBlur={() => debounceTimers.current.arrivalDate && debounceTimers.current.arrivalDate.flush()}
+            />
+          </div>
+          <textarea
+            className="input textarea"
+            rows={3}
+            defaultValue={local.arrivalSource}
+            onChange={(e) => commitDebounced("arrivalSource", { arrivalSource: e.target.value })}
+            onBlur={() => debounceTimers.current.arrivalSource && debounceTimers.current.arrivalSource.flush()}
+            placeholder="напр. подобран(а) на трассе М-4, привезла волонтёр Ирина; или передан(а) прежним хозяином по адресу..."
+          />
+        </section>
+
+        <section className="section">
+          <div className="section-title">📅 Возраст</div>
+          <div className="log-list">
+            {local.ageEntries.length === 0 && <div className="empty-hint">Записей ещё нет — добавьте первую оценку возраста.</div>}
+            {local.ageEntries.slice().reverse().map((e) => (
+              <div key={e.id} className="log-row">
+                <span className="log-date">{fmtDate(e.date)}</span>
+                <span className="log-text">{e.note}</span>
+                <button className="icon-btn" onClick={() => removeAge(e.id)}>✕</button>
+              </div>
+            ))}
+          </div>
+          <div className="add-row">
+            <input type="date" className="input input-date" value={newAgeDate} onChange={(e) => setNewAgeDate(e.target.value)} />
+            <input className="input" placeholder="напр. примерно 2 месяца" value={newAge} onChange={(e) => setNewAge(e.target.value)} />
+            <button className="add-btn" onClick={addAge}>➕ Добавить</button>
+          </div>
+        </section>
+
+        <MedicalLogSection list={local.medicalLog || []} onAdd={addTo("medicalLog")} onRemove={removeFrom("medicalLog")} />
+        <TreatmentCourseSection list={local.treatmentCourses || []} onAdd={addTo("treatmentCourses")} onRemove={removeFrom("treatmentCourses")} />
+
+        <section className="section">
+          <div className="section-title">📝 Особые заметки</div>
+          <div className="traits-grid">
+            {TRAIT_OPTIONS.map((t) => (
+              <button key={t} className={`trait-toggle ${(local.traits || []).includes(t) ? "on" : ""}`} onClick={() => toggleTrait(t)}>{t}</button>
+            ))}
+          </div>
+          <textarea
+            className="input textarea"
+            rows={4}
+            defaultValue={local.notes}
+            onChange={(e) => commitDebounced("notes", { notes: e.target.value })}
+            onBlur={() => debounceTimers.current.notes && debounceTimers.current.notes.flush()}
+            placeholder="характер, особенности здоровья, кому подойдёт..."
+          />
+        </section>
+
+        <PhotosSection
+          photos={local.photos || []}
+          mainPhotoId={local.mainPhotoId}
+          onAdd={(p) => { const photos = [...(local.photos || []), p]; commitNow({ photos, mainPhotoId: local.mainPhotoId || p.id }); }}
+          onRemove={removePhoto}
+          onSetMain={(id) => commitNow({ mainPhotoId: id })}
+        />
+
+        <DocumentsSection documents={local.documents || []} onAdd={addTo("documents")} onRemove={removeFrom("documents")} />
+
+        <div className="danger-zone">
+          {!confirmDelete ? (
+            <button className="delete-btn" onClick={() => setConfirmDelete(true)}>🗑️ Удалить карточку</button>
+          ) : (
+            <div className="confirm-row">
+              <span>⚠️ Удалить карточку «{local.name}» без возможности восстановления?</span>
+              <button className="delete-btn-confirm" onClick={() => onDelete(local.id)}>Да, удалить</button>
+              <button className="cancel-btn" onClick={() => setConfirmDelete(false)}>Отмена</button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SharedContactBar({ meta, onChange }) {
+  const [local, setLocal] = useState(meta);
+  const timers = useRef({});
+  useEffect(() => setLocal(meta), [meta.city, meta.contact]);
+  const commitDebounced = (key, patch, delay = 500) => {
+    const next = { ...local, ...patch };
+    setLocal(next);
+    if (timers.current[key]) clearTimeout(timers.current[key].id);
+    const id = setTimeout(() => onChange(next), delay);
+    timers.current[key] = { id, flush: () => onChange(next) };
+  };
+  return (
+    <div className="contact-bar">
+      <div className="contact-field">
+        <span>📍</span>
+        <input className="contact-input" placeholder="Город (общий для всей картотеки)" defaultValue={local.city}
+          onChange={(e) => commitDebounced("city", { city: e.target.value })}
+          onBlur={() => timers.current.city && timers.current.city.flush()} />
+      </div>
+      <div className="contact-field">
+        <span>☎️</span>
+        <input className="contact-input" placeholder="Контакт для связи (телефон / соцсеть)" defaultValue={local.contact}
+          onChange={(e) => commitDebounced("contact", { contact: e.target.value })}
+          onBlur={() => timers.current.contact && timers.current.contact.flush()} />
+      </div>
+    </div>
+  );
+}
+
+function NotificationsPanel({ dogs, onClose, onOpenDog }) {
+  const data = useMemo(() => collectNotifications(dogs), [dogs]);
+  const [expanded, setExpanded] = useState(null);
+
+  const Section = ({ title, tone, groups }) => {
+    if (groups.length === 0) return null;
+    return (
+      <div className={`notif-section notif-section-${tone}`}>
+        <div className="notif-section-title">{title}</div>
+        {groups.map((g) => {
+          const key = `${title}-${g.category}`;
+          const isOpen = expanded === key;
+          return (
+            <div key={key} className="notif-row-wrap">
+              <button className="notif-row" onClick={() => setExpanded(isOpen ? null : key)}>
+                <span className="notif-row-icon">{g.label.icon}</span>
+                <span className="notif-row-text">{g.count} {pluralRu(g.count, g.label)}</span>
+                <span className="notif-row-chevron">{isOpen ? "︿" : "﹀"}</span>
+              </button>
+              {isOpen && (
+                <div className="notif-detail-list">
+                  {g.items.map((it, i) => (
+                    <button key={i} className="notif-detail-item" onClick={() => { onOpenDog(it.dogId); onClose(); }}>
+                      №{it.dogNumber} · {it.dogName} <span className="notif-detail-date">{fmtDate(it.date)}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <div className="notif-overlay" onClick={onClose}>
+      <div className="notif-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="notif-panel-header">
+          <span>🔔 Уведомления</span>
+          <button className="round-icon-btn" onClick={onClose}>✕</button>
+        </div>
+        {data.total === 0 ? (
+          <div className="empty-hint" style={{ padding: 20 }}>Пока всё в порядке — просроченных и ближайших дел нет.</div>
+        ) : (
+          <div className="notif-body">
+            <Section title="Сегодня" tone="today" groups={data.today} />
+            <Section title="Через 7 дней" tone="soon" groups={data.soon} />
+            <Section title="Просрочено" tone="overdue" groups={data.overdue} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StatsPanel({ dogs, dueFilter, onSetDueFilter }) {
+  const placed = dogs.filter((d) => d.status === "пристроен").length;
+  const sterilized = dogs.filter((d) => lastSterilization(d)).length;
+  const needCare = dogs.filter((d) => hasActiveTreatment(d) || vaccinationDue(d) || parasiteDue(d)).length;
+  const tiles = [
+    { key: "all", icon: "🐾", num: dogs.length, label: "Всего животных", color: "var(--navy)", soft: "var(--navy-soft)" },
+    { key: "placed", icon: "❤️", num: placed, label: "Пристроено", color: "var(--rose-dark)", soft: "var(--rose-soft)" },
+    { key: "sterilized", icon: "🛡️", num: sterilized, label: "Стерилизовано", color: "var(--teal-dark)", soft: "var(--teal-soft)" },
+    { key: "care", icon: "🤲", num: needCare, label: "Требуют лечения", color: "var(--purple-dark)", soft: "var(--purple-soft)" },
+  ];
+  return (
+    <div className="stats-row">
+      {tiles.map((t) => (
+        <button
+          key={t.key}
+          className={`stat-tile ${dueFilter === t.key ? "active" : ""}`}
+          style={{ "--tile-color": t.color, "--tile-soft": t.soft }}
+          onClick={() => onSetDueFilter(dueFilter === t.key ? null : t.key)}
+        >
+          <span className="stat-icon">{t.icon}</span>
+          <span className="stat-num">{t.num}</span>
+          <span className="stat-label">{t.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function StatsScreen({ dogs, dueFilter, onSetDueFilter }) {
+  const byStatus = STATUS_OPTIONS.map((s) => ({
+    status: s, count: dogs.filter((d) => d.status === s).length,
+  }));
+  return (
+    <div>
+      <StatsPanel dogs={dogs} dueFilter={dueFilter} onSetDueFilter={onSetDueFilter} />
+      <div className="section">
+        <div className="section-title">По статусам</div>
+        <div className="log-list">
+          {byStatus.map((row) => (
+            <div key={row.status} className="log-row">
+              <span className="status-dot" style={{ background: STATUS_COLORS[row.status] }}></span>
+              <span className="log-text" style={{ textTransform: "capitalize" }}>{row.status}</span>
+              <Chip tone={STATUS_CHIP_TONE[row.status] || "muted"}>{row.count}</Chip>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BottomNav({ screen, onSetScreen, onAdd }) {
+  return (
+    <nav className="bottom-nav">
+      <button className={`bottom-nav-item ${screen === "home" ? "active" : ""}`} onClick={() => onSetScreen("home")}>
+        <span className="bottom-nav-icon">🏠</span>
+        <span>Главная</span>
+      </button>
+      <button className="bottom-nav-add" onClick={onAdd} title="Добавить карточку">➕</button>
+      <button className={`bottom-nav-item ${screen === "stats" ? "active" : ""}`} onClick={() => onSetScreen("stats")}>
+        <span className="bottom-nav-icon">📊</span>
+        <span>Статистика</span>
+      </button>
+    </nav>
+  );
+}
+
+function App() {
+  const { dogs, meta, loading, persist, saveState, retry, storageAvailable, loadFromBackup } = useDB();
+  const [openId, setOpenId] = useState(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [screen, setScreen] = useState("home");
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("все");
+  const [dueFilter, setDueFilter] = useState(null);
+  const [viewMode, setViewMode] = useState("grid");
+  const [importError, setImportError] = useState("");
+  const fileInputRef = useRef(null);
+
+  const filtered = useMemo(() => {
+    if (!dogs) return [];
+    return dogs.filter((d) => {
+      const matchesQuery = !query || d.name.toLowerCase().includes(query.toLowerCase()) || d.number.includes(query);
+      const matchesStatus = statusFilter === "все" || d.status === statusFilter;
+      let matchesDue = true;
+      if (dueFilter === "placed") matchesDue = d.status === "пристроен";
+      if (dueFilter === "sterilized") matchesDue = !!lastSterilization(d);
+      if (dueFilter === "care") matchesDue = hasActiveTreatment(d) || vaccinationDue(d) || parasiteDue(d);
+      return matchesQuery && matchesStatus && matchesDue;
+    });
+  }, [dogs, query, statusFilter, dueFilter]);
+
+  const openDog = openId && dogs ? dogs.find((d) => d.id === openId) : null;
+
+  const updateDog = (updated) => persist({ meta, dogs: dogs.map((d) => (d.id === updated.id ? updated : d)) });
+  const deleteDog = (id) => { persist({ meta, dogs: dogs.filter((d) => d.id !== id) }); setOpenId(null); };
+  const addDog = () => {
+    const maxNum = dogs.reduce((m, d) => Math.max(m, parseInt(d.number, 10) || 0), 0);
+    const newDog = blankDog(maxNum + 1);
+    persist({ meta, dogs: [...dogs, newDog] });
+    setOpenId(newDog.id);
+  };
+  const setDueFilterAndShowList = (key) => { setDueFilter(key); setScreen("home"); };
+  const updateMeta = (nextMeta) => persist({ meta: nextMeta, dogs });
+
+  const downloadBackup = () => {
+    const payload = { meta, dogs };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+    a.href = url; a.download = `kartoteka-priyuta-${stamp}.json`;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  };
+  const triggerImport = () => fileInputRef.current && fileInputRef.current.click();
+  const handleImportFile = (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    setImportError("");
+    const reader = new FileReader();
+    reader.onload = () => {
+      try { loadFromBackup(JSON.parse(reader.result)); }
+      catch (err) { setImportError("Не получилось прочитать файл — убедитесь, что это резервная копия, скачанная отсюда же."); }
+    };
+    reader.onerror = () => setImportError("Не получилось прочитать файл.");
+    reader.readAsText(file);
+  };
+
+  const notifTotal = useMemo(() => (dogs ? collectNotifications(dogs).total : 0), [dogs]);
+
+  if (loading || !dogs) {
+    return <div className="app-shell loading-shell"><div className="loading-text">🐾 Открываем картотеку…</div></div>;
+  }
+
+  const placed = dogs.filter((d) => d.status === "пристроен").length;
+  const needsAttention = dogs.filter((d) => hasActiveTreatment(d) || vaccinationDue(d) || parasiteDue(d)).length;
+
+  return (
+    <div className={`app-shell ${!openDog ? "has-bottom-nav" : ""}`}>
+      <header className="app-header">
+        <div className="app-header-left">
+          <div className="app-icon">🐾</div>
+          <div>
+            <div className="app-title">Картотека приюта</div>
+            <div className="app-subtitle">{dogs.length} карточек · {placed} пристроено</div>
+          </div>
+        </div>
+        <div className={`save-indicator save-${saveState}`}>
+          {saveState === "saved" && "✅ сохранено"}
+          {saveState === "error" && <button className="retry-btn" onClick={retry}>🔄 не сохранилось, повторить</button>}
+          {saveState === "local" && <button className="retry-btn" onClick={retry}>📴 офлайн, проверить снова</button>}
+          {(saveState === "idle" || saveState === "saving") && (
+            <button className="bell-btn" onClick={() => setShowNotifications(true)}>🔔{notifTotal > 0 && <span className="bell-dot"></span>}</button>
+          )}
+        </div>
+      </header>
+
+      {saveState === "error" && (
+        <div className="error-banner">⚠️ Последнее изменение не сохранилось в общей базе. Нажмите «повторить» справа вверху.</div>
+      )}
+      {!storageAvailable && (
+        <div className="local-banner">
+          <span>📴</span>
+          <div className="local-banner-text">Нет связи с общей базой — изменения хранятся только на этом экране. Скачайте резервную копию, если сейчас важные правки.</div>
+          <div className="backup-actions">
+            <button className="backup-btn backup-btn-primary" onClick={downloadBackup}>⬇️ Скачать копию</button>
+            <button className="backup-btn backup-btn-secondary" onClick={triggerImport}>⬆️ Загрузить копию</button>
+          </div>
+          {importError && <div className="import-error">{importError}</div>}
+          <input ref={fileInputRef} type="file" accept="application/json" className="hidden-file-input" onChange={handleImportFile} />
+        </div>
+      )}
+      {storageAvailable && (
+        <div className="backup-actions backup-actions-inline">
+          <button className="backup-btn backup-btn-primary" onClick={downloadBackup}>⬇️ Скачать копию</button>
+          <button className="backup-btn backup-btn-secondary" onClick={triggerImport}>⬆️ Загрузить копию</button>
+          {importError && <div className="import-error">{importError}</div>}
+          <input ref={fileInputRef} type="file" accept="application/json" className="hidden-file-input" onChange={handleImportFile} />
+        </div>
+      )}
+
+      <SharedContactBar meta={meta} onChange={updateMeta} />
+
+      {!openDog ? (
+        <React.Fragment>
+          {screen === "stats" ? (
+            <StatsScreen dogs={dogs} dueFilter={dueFilter} onSetDueFilter={setDueFilterAndShowList} />
+          ) : (
+            <React.Fragment>
+              <StatsPanel dogs={dogs} dueFilter={dueFilter} onSetDueFilter={setDueFilterAndShowList} />
+              <div className="toolbar">
+                <div className="search-box">
+                  <span>🔍</span>
+                  <input className="search-input" placeholder="Поиск по кличке или номеру..." value={query} onChange={(e) => setQuery(e.target.value)} />
+                </div>
+                <div className="view-toggle">
+                  <button className={`view-toggle-btn ${viewMode === "grid" ? "active" : ""}`} onClick={() => setViewMode("grid")} title="Плитка">▦</button>
+                  <button className={`view-toggle-btn ${viewMode === "list" ? "active" : ""}`} onClick={() => setViewMode("list")} title="Список">☰</button>
+                </div>
+              </div>
+              <div className="pill-row">
+                <button className={`pill-btn ${statusFilter === "все" && !dueFilter ? "active" : ""}`} onClick={() => { setStatusFilter("все"); setDueFilter(null); }}>Все</button>
+                {STATUS_OPTIONS.map((s) => (
+                  <button key={s} className={`pill-btn ${statusFilter === s ? "active" : ""}`} onClick={() => { setStatusFilter(s); setDueFilter(null); }}>{s}</button>
+                ))}
+              </div>
+              {dueFilter && (
+                <div className="active-due-note">
+                  Показаны отфильтрованные по статистике карточки.
+                  <button className="clear-due-btn" onClick={() => setDueFilter(null)}>✕ сбросить</button>
+                </div>
+              )}
+              {viewMode === "grid" ? (
+                <div className="grid">
+                  {filtered.map((d, i) => <DogCard key={d.id} dog={d} index={i} onOpen={setOpenId} />)}
+                  {filtered.length === 0 && <div className="empty-hint" style={{ padding: 24 }}>Ничего не найдено.</div>}
+                </div>
+              ) : (
+                <div className="list-col">
+                  {filtered.map((d, i) => <DogListRow key={d.id} dog={d} index={i} onOpen={setOpenId} />)}
+                  {filtered.length === 0 && <div className="empty-hint" style={{ padding: 24 }}>Ничего не найдено.</div>}
+                </div>
+              )}
+            </React.Fragment>
+          )}
+          <BottomNav screen={screen} onSetScreen={setScreen} onAdd={addDog} />
+        </React.Fragment>
+      ) : (
+        <DogDetail dog={openDog} onBack={() => setOpenId(null)} onUpdate={updateDog} onDelete={deleteDog} />
+      )}
+      {showNotifications && (
+        <NotificationsPanel dogs={dogs} onClose={() => setShowNotifications(false)} onOpenDog={(id) => { setOpenId(id); setScreen("home"); }} />
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((e) => console.error("SW registration failed:", e));
+  });
+}
+</script>
+</body>
+</html>
