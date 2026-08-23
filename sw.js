@@ -1,4 +1,4 @@
-const CACHE_NAME = "kartoteka-priyuta-v4";
+const CACHE_NAME = "dog-kart-v1";
 const APP_SHELL = [
   "./",
   "./index.html",

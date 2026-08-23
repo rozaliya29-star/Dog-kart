@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Картотека приюта</title>
+<title>Dog-Kart</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#A24E36">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Картотека">
+<meta name="apple-mobile-web-app-title" content="Dog-Kart">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -375,12 +375,12 @@ body { margin: 0; }
 const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDsfyI5kGKatp36bzDLn81X7ONHhqfCrbQ",
-  authDomain: "dog-tracker-778c0.firebaseapp.com",
-  projectId: "dog-tracker-778c0",
-  storageBucket: "dog-tracker-778c0.firebasestorage.app",
-  messagingSenderId: "1022922333620",
-  appId: "1:1022922333620:web:074273a9c295861f1ae6e1"
+  apiKey: "AIzaSyAIHSFxGEKmORic95cJRam9mxI0JLUFyY0",
+  authDomain: "dog-kart.firebaseapp.com",
+  projectId: "dog-kart",
+  storageBucket: "dog-kart.firebasestorage.app",
+  messagingSenderId: "729341881069",
+  appId: "1:729341881069:web:743a90b0061ac8517bbae4"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -1379,7 +1379,7 @@ function App() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
-    a.href = url; a.download = `kartoteka-priyuta-${stamp}.json`;
+    a.href = url; a.download = `dog-kart-${stamp}.json`;
     document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
   };
   const triggerImport = () => fileInputRef.current && fileInputRef.current.click();
@@ -1412,7 +1412,7 @@ function App() {
         <div className="app-header-left">
           <div className="app-icon">🐾</div>
           <div>
-            <div className="app-title">Картотека приюта</div>
+            <div className="app-title">Dog-Kart</div>
             <div className="app-subtitle">{dogs.length} карточек · {placed} пристроено</div>
           </div>
         </div>
