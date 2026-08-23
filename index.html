@@ -494,6 +494,7 @@ function fmtDate(d) {
 // into the current schema without losing anything already recorded.
 function fixRetiredStatus(status) {
   if (status === "в передержке" || status === "на передержке") return "в приюте";
+  if (status === "ищет дом") return "в приюте";
   return status || "в приюте";
 }
 
