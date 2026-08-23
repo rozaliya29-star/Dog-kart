@@ -74,7 +74,7 @@ body { margin: 0; }
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  padding: 16px 16px 60px;
+  padding: calc(16px + env(safe-area-inset-top)) 16px 60px;
   max-width: 720px;
   margin: 0 auto;
 }
@@ -119,9 +119,9 @@ body { margin: 0; }
 .hidden-file-input { display: none; }
 .import-error { width: 100%; font-size: 11.5px; color: var(--danger); }
 
-.contact-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
-.contact-field { display: flex; align-items: center; gap: 7px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; flex: 1; min-width: 220px; color: var(--accent); }
-.contact-input { border: none; background: transparent; outline: none; flex: 1; font-size: 13px; color: var(--ink); font-family: 'Inter', sans-serif; }
+.contact-bar { display: flex; gap: 8px; flex-wrap: nowrap; margin: 14px 0; }
+.contact-field { display: flex; align-items: center; gap: 6px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; flex: 1 1 0; min-width: 0; color: var(--accent); }
+.contact-input { border: none; background: transparent; outline: none; flex: 1; min-width: 0; font-size: 12.5px; color: var(--ink); font-family: 'Inter', sans-serif; }
 
 /* Today dashboard */
 
@@ -1198,13 +1198,13 @@ function SharedContactBar({ meta, onChange }) {
     <div className="contact-bar">
       <div className="contact-field">
         <span>📍</span>
-        <input className="contact-input" placeholder="Город (общий для всей картотеки)" defaultValue={local.city}
+        <input className="contact-input" placeholder="Город" defaultValue={local.city}
           onChange={(e) => commitDebounced("city", { city: e.target.value })}
           onBlur={() => timers.current.city && timers.current.city.flush()} />
       </div>
       <div className="contact-field">
-        <span>☎️</span>
-        <input className="contact-input" placeholder="Контакт для связи (телефон / соцсеть)" defaultValue={local.contact}
+        <span>📱</span>
+        <input className="contact-input" placeholder="Телефон / соцсеть" defaultValue={local.contact}
           onChange={(e) => commitDebounced("contact", { contact: e.target.value })}
           onBlur={() => timers.current.contact && timers.current.contact.flush()} />
       </div>
